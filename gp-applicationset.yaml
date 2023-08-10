@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: gp-applicationset
+spec:
+  generators:
+    # matrix 'parent' generator
+    - matrix:
+        generators:
+          # git generator 'child' #1
+          - git:
+              repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
+              revision: HEAD
+              directories:
+              - path: teams/gp/*
+          - list:
+              # v0.2.0+ form - does not require cluster/URL keys
+              # (but they are still supported).
+              elements:
+              - cluster: dev
+                url: https://kubernetes.default.svc
+                env: dev
+              - cluster: test
+                url: https://kubernetes.default.svc
+                env: test
+              - cluster: stage
+                url: https://kubernetes.default.svc
+                env: stage
+              - cluster: prod
+                url: https://kubernetes.default.svc
+                env: prod
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
+        targetRevision: HEAD
+        path: '{{path}}'
+        helm:
+          valueFiles:
+            - values.{{env}.{{path.basename}}.yaml
+      destination:
+        server: '{{url}}' 
+        namespace: 'gp-{{env}}'
