@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: np-applicationset
+spec:
+  generators:
+    # matrix 'parent' generator
+    - matrix:
+        generators:
+          # git generator 'child' #1
+          - git:
+              repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
+              revision: HEAD
+              directories:
+              - path: charts/np/*
+          - list:
+              # v0.2.0+ form - does not require cluster/URL keys
+              # (but they are still supported).
+              elements:
+              - cluster: dev
+                url: https://kubernetes.default.svc
+                brand: wsop
+              - cluster: dev
+                url: https://kubernetes.default.svc
+                brand: global
+
+              # - cluster: test
+              #   url: https://kubernetes.default.svc
+              #   brand: wsop
+              # - cluster: test
+              #   url: https://kubernetes.default.svc
+              #   brand: global
+
+              # - cluster: stage
+              #   url: https://kubernetes.default.svc
+              #   brand: wsop 
+              # - cluster: stage
+              #   url: https://kubernetes.default.svc
+              #   brand: global
+
+              # - cluster: global
+              #   url: https://kubernetes.default.svc
+              #   brand: global
+
+              # - cluster: wsop 
+              #   url: https://kubernetes.default.svc
+              #   brand: wsop
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: '{{cluster}}'
+      source:
+        repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
+        targetRevision: HEAD
+        path: '{{path}}/{{cluster}}'
+        helm:
+          releaseName: '{{path.basename}}'
+          valueFiles:
+            - 'values.{{brand}}.yaml'
+      destination:
+        server: '{{url}}' 
+        namespace: 'np-{{brand}}'
