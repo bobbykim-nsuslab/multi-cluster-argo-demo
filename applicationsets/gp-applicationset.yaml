@@ -21,9 +21,13 @@ spec:
               - cluster: dev
                 url: https://3389448CB7BEED329CD8156430E49395.gr7.ap-northeast-2.eks.amazonaws.com
                 brand: wsop
+                selfHeal: true
+                syncOptions: ["ApplyOutOfSyncOnly=true","PrunePropagationPolicy=background"]
               - cluster: dev
                 url: https://3389448CB7BEED329CD8156430E49395.gr7.ap-northeast-2.eks.amazonaws.com
                 brand: global
+                selfHeal: true
+                syncOptions: []
 
               # - cluster: test
               #   url: https://kubernetes.default.svc
@@ -63,3 +67,7 @@ spec:
       destination:
         server: '{{url}}' 
         namespace: 'gp-{{brand}}'
+      syncPolicy:
+        automated:
+          selfHeal: {{ selfHeal }}
+        syncOptions: {{ syncOptions }}
