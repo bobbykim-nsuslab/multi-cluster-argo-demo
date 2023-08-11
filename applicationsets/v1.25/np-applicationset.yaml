@@ -57,6 +57,8 @@ spec:
   template:
     metadata:
       name: '{{path.basename}}-{{brand}}'
+      labels:
+        team: 'np'
     spec:
       project: '{{cluster}}'
       source:
