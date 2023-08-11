@@ -2,6 +2,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: np-applicationset
+  annotations:
+      argocd.argoproj.io/sync-options: Validate=false
 spec:
   generators:
     # matrix 'parent' generator
@@ -9,8 +11,9 @@ spec:
         generators:
           # git generator 'child' #1
           - git:
-              repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
-              revision: HEAD
+              #repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
+              repoURL: git@github.com:bobbykim-nsuslab/multi-cluster-argo-demo.git
+              revision: main
               directories:
               - path: charts/np/*
           - list:
@@ -18,11 +21,17 @@ spec:
               # (but they are still supported).
               elements:
               - cluster: dev
-                url: https://kubernetes.default.svc
+                url: https://3389448CB7BEED329CD8156430E49395.gr7.ap-northeast-2.eks.amazonaws.com
                 brand: wsop
+                # template:
+                #   spec:
+                #     syncPolicy:
+                #       automated: {}
+                #syncOptions: ["ApplyOutOfSyncOnly=true","PrunePropagationPolicy=background"]
               - cluster: dev
-                url: https://kubernetes.default.svc
+                url: https://3389448CB7BEED329CD8156430E49395.gr7.ap-northeast-2.eks.amazonaws.com
                 brand: global
+                #syncOptions: []
 
               # - cluster: test
               #   url: https://kubernetes.default.svc
@@ -47,17 +56,27 @@ spec:
               #   brand: wsop
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{path.basename}}-{{brand}}'
     spec:
       project: '{{cluster}}'
       source:
-        repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
-        targetRevision: HEAD
-        path: '{{path}}/{{cluster}}'
+        repoURL: git@github.com:bobbykim-nsuslab/multi-cluster-argo-demo.git
+        targetRevision: main
+        path: '{{path}}'
         helm:
           releaseName: '{{path.basename}}'
           valueFiles:
-            - 'values.{{brand}}.yaml'
+            - values.yaml
+            - 'values.{{cluster}}.{{brand}}.yaml'
       destination:
         server: '{{url}}' 
-        namespace: 'np-{{brand}}'
+        namespace: 'gp-{{brand}}'
+      syncPolicy:
+        automated: {}
+      # syncPolicy:
+      #   automated:
+      #     prune: '{{prune}}'
+      #     selfHeal: '{{selfHeal}}'
+      #   syncOptions:
+      #     - CreateNamespace=true
+        #syncOptions: '{{ syncOptions }}'
