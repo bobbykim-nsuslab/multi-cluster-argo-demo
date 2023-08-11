@@ -71,6 +71,8 @@ spec:
       destination:
         server: '{{url}}' 
         namespace: 'gp-{{brand}}'
+      syncPolicy:
+        automated: {}
       # syncPolicy:
       #   automated:
       #     prune: '{{prune}}'
