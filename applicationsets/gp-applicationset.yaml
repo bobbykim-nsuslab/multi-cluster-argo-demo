@@ -9,8 +9,9 @@ spec:
         generators:
           # git generator 'child' #1
           - git:
-              repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
-              revision: HEAD
+              #repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
+              repoURL: git@github.com:bobbykim-nsuslab/multi-cluster-argo-demo.git
+              revision: main
               directories:
               - path: charts/gp/*
           - list:
@@ -18,10 +19,10 @@ spec:
               # (but they are still supported).
               elements:
               - cluster: dev
-                url: https://kubernetes.default.svc
+                url: https://3389448CB7BEED329CD8156430E49395.gr7.ap-northeast-2.eks.amazonaws.com
                 brand: wsop
               - cluster: dev
-                url: https://kubernetes.default.svc
+                url: https://3389448CB7BEED329CD8156430E49395.gr7.ap-northeast-2.eks.amazonaws.com
                 brand: global
 
               # - cluster: test
@@ -47,12 +48,12 @@ spec:
               #   brand: wsop
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{path.basename}}-{{brand}}'
     spec:
       project: '{{cluster}}'
       source:
-        repoURL: https://github.com/bobby.kim-nsuslab/multi-cluster-argo-demo.git
-        targetRevision: HEAD
+        repoURL: git@github.com:bobbykim-nsuslab/multi-cluster-argo-demo.git
+        targetRevision: main
         path: '{{path}}'
         helm:
           releaseName: '{{path.basename}}'

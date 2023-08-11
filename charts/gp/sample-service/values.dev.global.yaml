@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+brand: global
+team: np
+
 image:
   repository: nginx
   pullPolicy: IfNotPresent
