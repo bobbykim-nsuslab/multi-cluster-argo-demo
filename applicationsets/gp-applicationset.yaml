@@ -23,10 +23,10 @@ spec:
               - cluster: dev
                 url: https://3389448CB7BEED329CD8156430E49395.gr7.ap-northeast-2.eks.amazonaws.com
                 brand: wsop
-                template:
-                  spec:
-                    syncPolicy:
-                      automated: {}
+                # template:
+                #   spec:
+                #     syncPolicy:
+                #       automated: {}
                 #syncOptions: ["ApplyOutOfSyncOnly=true","PrunePropagationPolicy=background"]
               - cluster: dev
                 url: https://3389448CB7BEED329CD8156430E49395.gr7.ap-northeast-2.eks.amazonaws.com
